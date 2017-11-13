@@ -30,12 +30,11 @@ func main() {
 		defer r.Body.Close()
 		r.ParseForm()
 		msg := prepareMessage(topic, r.FormValue("q"))
-		errMsg := "No"
 		partition, offset, err := producer.SendMessage(msg)
+		fmt.Fprintf(w, "Message was saved to partition: %d.\nMessage offset is: %d.\n.", partition, offset)
 		if err != nil {
-			errMsg = err.Error()
+			fmt.Fprintf(w, "Error occurred - %s.\n", err)
 		}
-		fmt.Fprintf(w, "Message was saved to partition: %d.\nMessage offset is: %d.\n%s error occured.", partition, offset, errMsg)
 	})
 
 	http.HandleFunc("/retrieve", func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, html.EscapeString(getMessage())) })
